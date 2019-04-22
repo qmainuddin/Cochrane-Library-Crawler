@@ -36,9 +36,9 @@ public class ApplicationContainer {
             //for(Element element : links){
                 //anchors = element.select("li > a");
             anchors = links.get(0).select("li > a");
-                System.out.println("-----------------------Anchors---------------------------------------");
-                //for (Element elements1 : anchors){
-                    //System.out.println(elements1.text() + " Links: " + elements1.attr("href"));
+            System.out.println("-----------------------Anchors---------------------------------------");
+            //for (Element elements1 : anchors){
+                //System.out.println(elements1.text() + " Links: " + elements1.attr("href"));
             url = anchors.attr("href");
             topic =  anchors.get(0).text();
 
@@ -53,7 +53,8 @@ public class ApplicationContainer {
                 //}
             //}
         } catch (IOException e) {
-            Logger.getLogger(ApplicationContainer.class.getName()).log(Level.SEVERE, null, e);
+            //Logger.getLogger(ApplicationContainer.class.getName()).log(Level.SEVERE, null, e);
+            System.out.println(e.getStackTrace());
         }
     }
 }
