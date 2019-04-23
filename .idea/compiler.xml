@@ -9,5 +9,8 @@
         <module name="vantage-webcrawler" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="vantage-webcrawler" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -59,10 +59,7 @@ public class HttpReader implements Reader {
 
     @Override
     public Elements read(Document content, String cssClassName) {
-        if(!cssClassName.startsWith(".")){
-            cssClassName = "." + cssClassName;
-        }
-        return content.select(cssClassName);
+        return content.select(Common.getCssClassyname(cssClassName));
     }
 
     @Override

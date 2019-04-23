@@ -10,7 +10,13 @@ public class Common {
         for (String param : params){
             paramStr += param + " > ";
         }
-        return paramStr.substring(0, paramStr.lastIndexOf(">")-2);
+        return paramStr.substring(0, paramStr.lastIndexOf(">")-1);
+    }
+    public static String getCssClassyname(String cssClassName){
+        if(!cssClassName.startsWith(".")){
+            cssClassName = "." + cssClassName;
+        }
+        return cssClassName;
     }
     public static String dateProcessor(String date){
         String[] partsOfDate = date.split(" ");
