@@ -2,6 +2,16 @@ package com.vantage.crawlers;
 
 import com.crawlers.core.Common;
 import com.crawlers.core.HttpClientFactory;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.conn.ssl.TrustStrategy;
 import com.crawlers.core.HttpReader;
 import com.crawlers.core.Reader;
 import org.apache.http.HttpEntity;
@@ -11,6 +21,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
@@ -70,33 +83,56 @@ public class ApplicationContainer {
 //        }
 //    }
     public static void main(String[] args) throws Exception{
-        // Trust own CA and all self-signed certs
-        SSLContext sslcontext = SSLContexts.custom()
-                .loadTrustMaterial(new File("F:\\Jobs\\vantagelabs\\Cochrane-Library-Crawler\\my-release-key.keystore"), "nopassword".toCharArray(),
-                        new TrustSelfSignedStrategy())
-                .build();
+        // HTTP Basic Authentication with username and password
+        HttpHost target = new HttpHost("input.livetracking.io", 443, "http");
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(
+                new AuthScope(target.getHostName(), target.getPort()),
+                new UsernamePasswordCredentials("USERNAME", "PASSWORD")); // Set username and password
+
+        // Setup a Trust Strategy that allows all certificates.
+        // !!! DO NOT USE THIS IN PRODUCTION !!!
+        SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(null, new TrustStrategy() {
+            public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+                return true;
+            }
+        }).build();
+
         // Allow TLSv1 protocol only
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
                 sslcontext,
                 new String[] { "TLSv1" },
                 null,
-                SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+                SSLConnectionSocketFactory.getDefaultHostnameVerifier()
+        );
         CloseableHttpClient httpclient = HttpClients.custom()
+                .setDefaultCredentialsProvider(credsProvider)
                 .setSSLSocketFactory(sslsf)
                 .build();
         try {
 
-            HttpGet httpget = new HttpGet("https://www.cochranelibrary.com/cdsr/reviews/topics");
+            // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            // Generate BASIC scheme object and add it to the local
+            // auth cache
+            BasicScheme basicAuth = new BasicScheme();
+            authCache.put(target, basicAuth);
+
+            // Add AuthCache to the execution context
+            HttpClientContext localContext = HttpClientContext.create();
+            localContext.setAuthCache(authCache);
+
+            // Get URL
+            HttpGet httpget = new HttpGet("https://input.livetracking.io/user");
+            httpget.setHeader("User-Agent", "MySuperUserAgent");
 
             System.out.println("Executing request " + httpget.getRequestLine());
-
             CloseableHttpResponse response = httpclient.execute(httpget);
             try {
                 HttpEntity entity = response.getEntity();
-
                 System.out.println("----------------------------------------");
                 System.out.println(response.getStatusLine());
-                EntityUtils.consume(entity);
+                System.out.println(EntityUtils.toString(entity));
             } finally {
                 response.close();
             }

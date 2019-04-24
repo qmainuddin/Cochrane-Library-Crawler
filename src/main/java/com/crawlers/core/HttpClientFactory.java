@@ -32,52 +32,18 @@ public class HttpClientFactory {
 
     private static PoolingHttpClientConnectionManager connPool = null;
 
-    //private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientFactory.class);
-
-    static{
-        try
-        {
-            SSLContext sslcontext = SSLContexts.custom().loadTrustMaterial(new TrustSelfSignedStrategy()).build();
-            //sslcontext.init(new KeyManager[0], new TrustManager[] { new HttpsTrustManager() }, new SecureRandom());
-            sslcontext.init(null, new X509TrustManager[]{new HttpsTrustManager()}, new SecureRandom());
-            SSLConnectionSocketFactory factory = new SSLConnectionSocketFactory(sslcontext,
-                    new HostnameVerifier() {
-                        @Override
-                        public boolean verify(final String s, final SSLSession sslSession) {
-
-                            return true;
-                        }
-                    });
-
-            Registry r = RegistryBuilder. create()
-                    .register("https", factory).build();
-
-            connPool = new PoolingHttpClientConnectionManager(r);
-            // Increase max total connection to 200
-            connPool.setMaxTotal(200);
-
-            connPool.setDefaultMaxPerRoute(20);
+    public static final String  CONTENT_ENCODING = "Content-Encoding";
+    /**
+     * Many users would get caught by not setting a user-agent and therefore getting different responses on their desktop
+     * vs in jsoup, which would otherwise default to {@code Java}. So by default, use a desktop UA.
+     */
+    public static final String DEFAULT_UA =
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36";
+    private static final String USER_AGENT = "User-Agent";
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String MULTIPART_FORM_DATA = "multipart/form-data";
+    private static final String FORM_URL_ENCODED = "application/x-www-form-urlencoded";
+    private static final int HTTP_TEMP_REDIR = 307; // http/1.1 temporary redirect, not in Java's set.
 
 
-            client = HttpClients.custom().
-                    setConnectionManagerShared(true).
-                    setConnectionManager(connPool).
-                    setSSLSocketFactory(factory).build();
-        }
-        catch(Exception e){
-           // LOGGER.error("Error initiliazing HttpClientFactory :: ",e);
-        }
-    }
-
-    public static CloseableHttpClient getHttpsClient() throws KeyManagementException, NoSuchAlgorithmException  {
-
-        if (client != null) {
-            return client;
-        }
-        throw new RuntimeException("Client is not initiliazed properly");
-
-    }
-    public static void releaseInstance() {
-        client = null;
-    }
 }

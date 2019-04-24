@@ -28,7 +28,7 @@ public class HttpReader implements Reader {
     private CloseableHttpClient httpClient = null;
 
     public HttpReader() throws Exception {
-        this.httpClient = HttpClientFactory.getHttpsClient();
+        //this.httpClient = HttpClientFactory.getHttpsClient();
         //this.httpClient = HttpClients.createDefault();
     }
 
