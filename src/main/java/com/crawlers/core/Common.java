@@ -1,9 +1,5 @@
 package com.crawlers.core;
 
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-
 public class Common {
     public static String buildStringFromParams(String... params){
         String paramStr = "";
@@ -12,20 +8,22 @@ public class Common {
         }
         return paramStr.substring(0, paramStr.lastIndexOf(">")-1);
     }
-    public static String getCssClassyname(String cssClassName){
+    public static String getCssClassname(String cssClassName){
         if(!cssClassName.startsWith(".")){
             cssClassName = "." + cssClassName;
         }
         return cssClassName;
     }
-    public static String dateProcessor(String date){
-        String[] partsOfDate = date.split(" ");
-        if(partsOfDate.length >= 3){
-            LocalDate localDate = LocalDate.of(Integer.parseInt(partsOfDate[2]), Month.valueOf(partsOfDate[1]), Integer.parseInt(partsOfDate[0]));
-            return localDate.toString();
-        }else {
-
+    public static String processDate(String date){
+        if(!Config.propertiesMap.get(Config.existingDateFormat).isEmpty()) {
+            if (Config.propertiesMap.get(Config.existingDateFormat).equalsIgnoreCase("DD MONTH YYYY")) {
+                String[] dateSplitted = date.split(" ");
+                if (!Config.propertiesMap.get(Config.targetDateFormat).isEmpty() &&
+                        Config.propertiesMap.get(Config.targetDateFormat).equalsIgnoreCase("YYYY-MM-dd")) {
+                    date = dateSplitted[2] + "-" + dateSplitted[1] + "-" + dateSplitted[0];
+                }
+            }
         }
-        return "";
+        return date;
     }
 }
