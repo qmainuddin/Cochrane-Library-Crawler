@@ -824,6 +824,4 @@ arm-p/
 translations/*.qm
 
 # IDE settings
-src/main/resources/
-src/test/
 target/generated-sources/
