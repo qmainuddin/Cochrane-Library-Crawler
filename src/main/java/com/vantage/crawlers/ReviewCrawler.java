@@ -31,7 +31,8 @@ public class ReviewCrawler implements Callable<List<ReviewModel>> {
         return new ReviewCrawler(anchor, topic);
     }
 
-    public static void start(){
+    public static boolean start(){
+        boolean done = false;
         LOGGER = LogManager.getLogger();
         LOGGER.info("---------------- Application Started ----------------");
 
@@ -65,12 +66,15 @@ public class ReviewCrawler implements Callable<List<ReviewModel>> {
             new FileManager<ReviewModel>().writeToFile(filePath, reviewModels);
 
             System.out.println("Done !!! Please check the output file at " + filePath);
+            done = true;
         } catch (Exception e) {
             LOGGER.error(e);
+            done = false;
         }finally {
             executor.shutdown();
         }
         LOGGER.info("---------------- Task Completed ----------------");
+        return done;
     }
 
     @Override
@@ -102,4 +106,5 @@ public class ReviewCrawler implements Callable<List<ReviewModel>> {
         }
         return reviewModels;
     }
+
 }

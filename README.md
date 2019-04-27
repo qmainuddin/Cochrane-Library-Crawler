@@ -12,5 +12,6 @@
  1. Java: 8+
  2. Maven: 3.5.3
  
+ **N.B:** There is a config.properties file in src/main/resources folder. This file contains search page url, base url and other parameters which is used to crawl the site. So please look at the file first and make changes whatever you want. I have also added an unit test method with this project. 
  
  **Thank you !!!!!**  
